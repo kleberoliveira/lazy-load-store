@@ -17,7 +17,7 @@ describe("Storage", () => {
   let storage: StorageWithDynamicProps;
 
   beforeEach(() => {
-    storage = Storage.getInstance() as StorageWithDynamicProps;
+    storage = new Storage() as StorageWithDynamicProps;
   });
 
   afterEach(() => {
@@ -28,8 +28,8 @@ describe("Storage", () => {
   });
 
   it("should create a singleton instance", () => {
-    const instance1 = Storage.getInstance();
-    const instance2 = Storage.getInstance();
+    const instance1 = new Storage();
+    const instance2 = new Storage();
 
     expect(instance1).toBe(instance2); // Verifica singleton
   });

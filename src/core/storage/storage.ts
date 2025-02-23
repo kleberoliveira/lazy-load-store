@@ -9,32 +9,27 @@ import { PropertyHandler } from "../handlers";
  */
 export class Storage {
   private static instance: Storage | null = null;
-  private fileManager: FileManager;
-  private propertyHandler: PropertyHandler;
-  public data: Record<string, unknown>;
+  private fileManager!: FileManager;
+  private propertyHandler!: PropertyHandler;
+  public data: Record<string, unknown> = {};
 
   /**
-   * Cria uma instância do Storage utilizando o diretório do processo atual como local de armazenamento.
-   * @param basePath - Caminho base para salvar os arquivos (por padrão, o diretório onde o processo foi iniciado).
+   * Construtor da classe que retorna sempre a instância singleton.
+   * Ao chamar "new Storage()", o método getInstance é automaticamente utilizado.
+   * @param basePath - Caminho base para salvar os arquivos (padrão: diretório do processo atual).
    */
-  private constructor(basePath: string) {
+  constructor(basePath: string = process.cwd()) {
+    if (Storage.instance) {
+      return Storage.instance;
+    }
+
     const storagePath = resolve(basePath, "storage");
     this.data = {};
     this.fileManager = new FileManager(storagePath);
     this.propertyHandler = new PropertyHandler(this.fileManager);
-  }
 
-  /**
-   * Retorna a instância singleton do Storage.
-   * Se não existir, cria uma nova instância com o diretório do processo atual ou um fornecido.
-   * @param basePath - Caminho base opcional para salvar os arquivos (padrão: diretório do processo atual).
-   */
-  public static getInstance(basePath: string = process.cwd()): Storage {
-    if (!this.instance) {
-      const storage = new Storage(basePath);
-      this.instance = new Proxy(storage, storage.createProxyHandler());
-    }
-    return this.instance;
+    Storage.instance = new Proxy(this, this.createProxyHandler());
+    return Storage.instance;
   }
 
   /**
