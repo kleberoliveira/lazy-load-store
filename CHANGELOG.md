@@ -1,3 +1,9 @@
+## [1.1.2](https://github.com/kleberoliveira/lazy-load-store/compare/v1.1.1...v1.1.2) (2025-02-23)
+
+### Bug Fixes
+
+* **storage:** refatorar construtor da classe Storage e inicialização de propriedades ([6d078b8](https://github.com/kleberoliveira/lazy-load-store/commit/6d078b8df126895ec50920ed158b18660858e147))
+
 ## [1.1.1](https://github.com/kleberoliveira/lazy-load-store/compare/v1.1.0...v1.1.1) (2025-02-23)
 
 ### Bug Fixes
