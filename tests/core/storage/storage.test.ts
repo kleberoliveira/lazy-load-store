@@ -1,6 +1,6 @@
-import { Storage } from "../../../src/core/storage";
 import { existsSync, readFileSync, rmSync } from "fs";
 import { join, resolve } from "path";
+import { Storage } from "../../../src/core/storage";
 
 jest.mock("../../../src/utils/filename-generator", () => ({
   generateFilename: (prop: string) => `${prop}_mocked.txt`,

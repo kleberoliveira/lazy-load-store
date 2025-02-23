@@ -1,5 +1,4 @@
-import { PropertyHandler } from "../../../src/core/handlers/property-handler";
-import { FileManager } from "../../../src/core/file/file-manager";
+import { PropertyHandler, FileManager } from "../../../src/core";
 import { join } from "path";
 import { existsSync, readFileSync, unlinkSync, rmdirSync } from "fs";
 

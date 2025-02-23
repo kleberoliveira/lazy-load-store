@@ -1,4 +1,4 @@
-import { FileManager } from "../../../src/core/file/file-manager";
+import { FileManager } from "../../../src/core";
 import { existsSync, readFileSync, unlinkSync, rmdirSync } from "fs";
 import { join } from "path";
 
