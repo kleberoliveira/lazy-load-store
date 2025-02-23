@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.0.0...v1.1.0) (2025-02-23)
+
+### Features
+
+* **storage:** adicionar suporte à personalização do diretório de armazenamento ([54a3df3](https://github.com/kleberoliveira/lazy-load-store/commit/54a3df31ab0388551aa3e733734350c1a4643790))
+
 ## 1.0.0 (2025-02-23)
 
 ### Features
