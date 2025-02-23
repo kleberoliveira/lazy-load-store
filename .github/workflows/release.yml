@@ -1,0 +1,41 @@
+name: 🚀 Manual Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: 📦 Create Release and Publish to npm
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+
+    steps:
+      - name: ⬇️ Checkout código
+        uses: actions/checkout@v4
+
+      - name: 📝 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.8.1"
+          registry-url: "https://registry.npmjs.org/"
+          cache: "npm"
+
+      - name: 📥 Instalar dependências
+        run: npm install
+
+      - name: Build project
+        run: npm run build        
+
+      - name: 🔑 Configurar autenticação no npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+
+      - name: 🚀 Rodar release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release

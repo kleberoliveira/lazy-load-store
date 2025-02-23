@@ -1,4 +1,4 @@
-# 📦 deep-cache
+# 📦 lazy-load-store
 
 Armazene facilmente valores grandes de objetos aninhados em arquivos com recuperação automática e manuseio de referências.
 
@@ -7,7 +7,7 @@ Armazene facilmente valores grandes de objetos aninhados em arquivos com recuper
 ## 🚀 Instalação
 
 ```bash
-npm install deep-cache
+npm install lazy-load-store
 ```
 
 ---
@@ -17,7 +17,7 @@ npm install deep-cache
 ### ✅ **Exemplo básico**
 
 ```ts
-import storage from "deep-cache";
+import storage from "lazy-load-store";
 
 // Armazena uma string pequena diretamente
 storage.smallValue = "Hello, world!";

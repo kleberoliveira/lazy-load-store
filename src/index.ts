@@ -1,5 +1,5 @@
 import { Storage } from "./core/storage";
 
-const deepStoreInstance = Storage.getInstance();
+const lazyLoadStoreInstance = Storage.getInstance();
 
-export default deepStoreInstance;
+export default lazyLoadStoreInstance;
