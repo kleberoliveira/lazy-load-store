@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/kleberoliveira/lazy-load-store/compare/v1.1.0...v1.1.1) (2025-02-23)
+
+### Bug Fixes
+
+* **tsconfig:** atualizar configuração do TypeScript ([c372140](https://github.com/kleberoliveira/lazy-load-store/commit/c3721402c2e5714539b664356b097dcb855b53c9))
+
 ## [1.1.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.0.0...v1.1.0) (2025-02-23)
 
 ### Features
