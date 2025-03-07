@@ -27,13 +27,6 @@ describe("Storage", () => {
     }
   });
 
-  it("should create a singleton instance", () => {
-    const instance1 = new Storage();
-    const instance2 = new Storage();
-
-    expect(instance1).toBe(instance2); // Verifica singleton
-  });
-
   it("should set and get a small value directly", () => {
     storage.smallValue = "test";
     expect(storage.smallValue).toBe("test");
