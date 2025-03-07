@@ -1,5 +1,6 @@
 import { FileManager } from "../file";
 import { generateFilename } from "../../utils/filename-generator";
+import { isObject } from "../../utils/type-guards";
 
 /**
  * Classe responsável por lidar com a configuração (set) e recuperação (get) de propriedades.
@@ -49,7 +50,7 @@ export class PropertyHandler {
       return value.map((item, index) => this.processValueForSet(`${prop}_${index}`, item));
     }
 
-    if (this.isObject(value)) {
+    if (isObject(value)) {
       return Object.fromEntries(
         Object.entries(value).map(([key, val]) => [key, this.processValueForSet(`${prop}_${key}`, val)])
       );
@@ -73,7 +74,7 @@ export class PropertyHandler {
       return value.map((item) => this.processValueForGet(item));
     }
 
-    if (this.isObject(value)) {
+    if (isObject(value)) {
       return Object.fromEntries(
         Object.entries(value).map(([key, val]) => [key, this.processValueForGet(val)])
       );
@@ -98,14 +99,5 @@ export class PropertyHandler {
    */
   public isStoredInFile(value: unknown): value is string {
     return typeof value === "string" && value.endsWith(".txt");
-  }
-
-  /**
-   * Verifica se o valor é um objeto (excluindo arrays e null).
-   * @param value - Valor a ser verificado.
-   * @returns True se for um objeto.
-   */
-  private isObject(value: unknown): value is Record<string, unknown> {
-    return value !== null && typeof value === "object" && !Array.isArray(value);
   }
 }

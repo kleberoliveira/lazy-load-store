@@ -1,6 +1,7 @@
 import { resolve } from "path";
 import { FileManager } from "../file/";
 import { PropertyHandler } from "../handlers";
+import { isObject } from "../../utils/type-guards";
 
 /**
  * Classe Storage responsável por armazenar dados com suporte a arquivos para valores grandes.
@@ -18,18 +19,14 @@ export class Storage {
    * Ao chamar "new Storage()", o método getInstance é automaticamente utilizado.
    * @param basePath - Caminho base para salvar os arquivos (padrão: diretório do processo atual).
    */
-  constructor(basePath: string = process.cwd()) {
-    if (Storage.instance) {
-      return Storage.instance;
-    }
+  constructor(basePath: string = process.cwd(), data: Record<string, unknown> = {}) {
 
     const storagePath = resolve(basePath, "storage");
-    this.data = {};
+    this.data = data;
     this.fileManager = new FileManager(storagePath);
     this.propertyHandler = new PropertyHandler(this.fileManager);
 
-    Storage.instance = new Proxy(this, this.createProxyHandler());
-    return Storage.instance;
+    return new Proxy(this, this.createProxyHandler());
   }
 
   /**
@@ -37,23 +34,47 @@ export class Storage {
    */
   private createProxyHandler(): ProxyHandler<Storage> {
     return {
-      set: (target, prop: string, value: unknown): boolean => {
-        target.data[prop] = this.propertyHandler.handleSet(prop, value);
-        return true;
-      },
-      get: (target, prop: string): unknown => {
-        if (prop in target) {
-          // @ts-expect-error: Accessing dynamic properties of the class
-          return target[prop];
-        }
-
-        if (prop === "getFileName") {
-          return (property: string) => target.data[property];
-        }
-
-        return this.propertyHandler.handleGet(prop, target.data[prop]);
-      },
+      set: this.setHandler.bind(this),
+      get: this.getHandler.bind(this),
     };
+  }
+
+  private setHandler(target: Storage, prop: string, value: unknown): boolean {
+    target.data[prop] = this.propertyHandler.handleSet(prop, value);
+    return true;
+  }
+
+  private getHandler(target: Storage, prop: string): unknown {
+    if (this.isPropertyOfTarget(target, prop)) {
+      return this.getPropertyFromTarget(target, prop);
+    }
+
+    if (prop === "getFileName") {
+      return this.createGetFileNameMethod(target);
+    }
+
+    return this.getProcessedValue(target, prop);
+  }
+
+  private isPropertyOfTarget(target: Storage, prop: string): boolean {
+    return prop in target;
+  }
+
+  private getPropertyFromTarget(target: Storage, prop: string): unknown {
+    // @ts-expect-error: Accessing dynamic properties of the class
+    return target[prop];
+  }
+
+  private createGetFileNameMethod(target: Storage): (property: string) => unknown {
+    return (property: string) => target.data[property];
+  }
+
+  private getProcessedValue(target: Storage, prop: string): unknown {
+    const value = this.propertyHandler.handleGet(prop, target.data[prop]);
+    if (isObject(value)) {
+      return new Proxy(new Storage(process.cwd(), value), this.createProxyHandler());
+    }
+    return value;
   }
 
   /**
