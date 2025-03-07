@@ -12,7 +12,7 @@ export class Storage {
   private static instance: Storage | null = null;
   private fileManager!: FileManager;
   private propertyHandler!: PropertyHandler;
-  public data: Record<string, unknown> = {};
+  private __data__: Record<string, unknown> = {};
 
   /**
    * Construtor da classe que retorna sempre a instância singleton.
@@ -22,7 +22,7 @@ export class Storage {
   constructor(basePath: string = process.cwd(), data: Record<string, unknown> = {}) {
 
     const storagePath = resolve(basePath, "storage");
-    this.data = data;
+    this.__data__ = data;
     this.fileManager = new FileManager(storagePath);
     this.propertyHandler = new PropertyHandler(this.fileManager);
 
@@ -40,7 +40,7 @@ export class Storage {
   }
 
   private setHandler(target: Storage, prop: string, value: unknown): boolean {
-    target.data[prop] = this.propertyHandler.handleSet(prop, value);
+    target.__data__[prop] = this.propertyHandler.handleSet(prop, value);
     return true;
   }
 
@@ -66,11 +66,11 @@ export class Storage {
   }
 
   private createGetFileNameMethod(target: Storage): (property: string) => unknown {
-    return (property: string) => target.data[property];
+    return (property: string) => target.__data__[property];
   }
 
   private getProcessedValue(target: Storage, prop: string): unknown {
-    const value = this.propertyHandler.handleGet(prop, target.data[prop]);
+    const value = this.propertyHandler.handleGet(prop, target.__data__[prop]);
     if (isObject(value)) {
       return new Proxy(new Storage(process.cwd(), value), this.createProxyHandler());
     }
@@ -99,7 +99,7 @@ export class Storage {
    * Destroi a instância do Storage e remove os arquivos associados.
    */
   public async destroy(): Promise<void> {
-    const filesToDelete = this.collectFiles(this.data);
+    const filesToDelete = this.collectFiles(this.__data__);
     const promisesToDelete = filesToDelete.map((file) => this.fileManager.deleteFile(file));
     await Promise.all(promisesToDelete);
     Storage.instance = null;

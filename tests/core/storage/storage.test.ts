@@ -62,15 +62,16 @@ describe("Storage", () => {
   });
 
   it("should collect all stored file references", () => {
-    storage.data = {
+    const data = {
       file1: "file1_mocked.txt",
       file2: "file2_mocked.txt",
       nested: {
         file3: "file3_mocked.txt",
       },
     };
+    const storage = new Storage(process.cwd(), data);
 
-    const collectedFiles = storage.collectFiles(storage.data);
+    const collectedFiles = storage.collectFiles(data);
 
     expect(collectedFiles).toEqual([
       "file1_mocked.txt",
