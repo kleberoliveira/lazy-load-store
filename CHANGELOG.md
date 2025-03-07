@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.1.2...v1.2.0) (2025-03-07)
+
+### Features
+
+* **storage:** modularizar e melhorar tratamento de objetos aninhados ([e14271b](https://github.com/kleberoliveira/lazy-load-store/commit/e14271b8a3197b6d8667d8e6ebd8dd85bf7e93bf))
+
 ## [1.1.2](https://github.com/kleberoliveira/lazy-load-store/compare/v1.1.1...v1.1.2) (2025-02-23)
 
 ### Bug Fixes
