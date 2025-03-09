@@ -3,57 +3,77 @@ import { FileManager } from "../file/";
 import { PropertyHandler } from "../handlers";
 import { isObject } from "../../utils/type-guards";
 
-/**
- * Classe Storage responsável por armazenar dados com suporte a arquivos para valores grandes.
- * Implementa o padrão Singleton com Proxy para interceptar operações de get e set.
- * O diretório de armazenamento será relativo ao local onde a instância da classe Storage for criada.
- */
+const contextMap = new WeakMap<object, StorageContext>();
+
 export class Storage {
-  private static instance: Storage | null = null;
-  private fileManager!: FileManager;
-  private propertyHandler!: PropertyHandler;
-  private __data__: Record<string, unknown> = {};
-
-  /**
-   * Construtor da classe que retorna sempre a instância singleton.
-   * Ao chamar "new Storage()", o método getInstance é automaticamente utilizado.
-   * @param basePath - Caminho base para salvar os arquivos (padrão: diretório do processo atual).
-   */
   constructor(basePath: string = process.cwd(), data: Record<string, unknown> = {}) {
+    const instance = Object.create(Storage.prototype);
+    const context = new StorageContext(basePath, data);
+    
+    const proxy = new Proxy(instance, context.createProxyHandler());
+    contextMap.set(proxy, context);
 
+    return proxy;
+  }
+
+  public collectFiles(data: unknown): string[] {
+    const context = contextMap.get(this);
+    if (!context) throw new Error("Context not found.");
+    return context.collectFiles(data);
+  }
+
+  public async destroy(): Promise<void> {
+    const context = contextMap.get(this);
+    if (!context) throw new Error("Context not found.");
+    await context.destroy();
+  }
+
+  public toJSON(): Record<string, unknown> {
+    const context = contextMap.get(this);
+    if (!context) throw new Error("Context not found.");
+    return context.getAllData();
+  }  
+}
+
+class StorageContext {
+  private fileManager: FileManager;
+  private propertyHandler: PropertyHandler;
+  private __data__: Record<string, unknown>;
+
+  private objectCache = new WeakMap<object, Storage>();
+
+  constructor(basePath: string, data: Record<string, unknown>) {
     const storagePath = resolve(basePath, "storage");
     this.__data__ = data;
     this.fileManager = new FileManager(storagePath);
     this.propertyHandler = new PropertyHandler(this.fileManager);
-
-    return new Proxy(this, this.createProxyHandler());
   }
 
-  /**
-   * Cria o handler para o Proxy, interceptando operações de get e set.
-   */
-  private createProxyHandler(): ProxyHandler<Storage> {
+  public createProxyHandler(): ProxyHandler<Storage> {
     return {
-      set: this.setHandler.bind(this),
-      get: this.getHandler.bind(this),
+      set: (target, prop, value) => this.setHandler(target, prop, value),
+      get: (target, prop) => this.getHandler(target, prop),
     };
   }
 
-  private setHandler(target: Storage, prop: string, value: unknown): boolean {
-    target.__data__[prop] = this.propertyHandler.handleSet(prop, value);
+  private setHandler(target: Storage, prop: string | symbol, value: unknown): boolean {
+    if (typeof prop !== "string") return false;
+    this.__data__[prop] = this.propertyHandler.handleSet(prop, value);
     return true;
   }
 
-  private getHandler(target: Storage, prop: string): unknown {
+  private getHandler(target: Storage, prop: string | symbol): unknown {
+    if (typeof prop !== "string") return undefined;
+
     if (this.isPropertyOfTarget(target, prop)) {
       return this.getPropertyFromTarget(target, prop);
     }
 
     if (prop === "getFileName") {
-      return this.createGetFileNameMethod(target);
+      return this.createGetFileNameMethod();
     }
 
-    return this.getProcessedValue(target, prop);
+    return this.getProcessedValue(prop);
   }
 
   private isPropertyOfTarget(target: Storage, prop: string): boolean {
@@ -65,23 +85,26 @@ export class Storage {
     return target[prop];
   }
 
-  private createGetFileNameMethod(target: Storage): (property: string) => unknown {
-    return (property: string) => target.__data__[property];
+  private createGetFileNameMethod(): (property: string) => unknown {
+    return (property: string) => this.__data__[property];
   }
 
-  private getProcessedValue(target: Storage, prop: string): unknown {
-    const value = this.propertyHandler.handleGet(prop, target.__data__[prop]);
+  private getProcessedValue(prop: string): unknown {
+    const value = this.propertyHandler.handleGet(prop, this.__data__[prop]);
+
     if (isObject(value)) {
-      return new Proxy(new Storage(process.cwd(), value), this.createProxyHandler());
-    }
-    return value;
-  }
+      if (this.objectCache.has(value)) {
+        return this.objectCache.get(value);
+      }
 
-  /**
-   * Coleta todos os arquivos referenciados no objeto fornecido.
-   * @param data - Dados a serem inspecionados.
-   * @returns Array de nomes de arquivos encontrados.
-   */
+      const storageInstance = new Storage(process.cwd(), value);
+      this.objectCache.set(value, storageInstance);
+      return storageInstance;
+    }
+
+    return value;
+  }  
+
   public collectFiles(data: unknown): string[] {
     if (!data || typeof data !== "object") return [];
 
@@ -95,13 +118,13 @@ export class Storage {
     }, []);
   }
 
-  /**
-   * Destroi a instância do Storage e remove os arquivos associados.
-   */
+  public getAllData(): Record<string, unknown> {
+    return JSON.parse(JSON.stringify(this.__data__));
+  }
+
   public async destroy(): Promise<void> {
     const filesToDelete = this.collectFiles(this.__data__);
     const promisesToDelete = filesToDelete.map((file) => this.fileManager.deleteFile(file));
     await Promise.all(promisesToDelete);
-    Storage.instance = null;
   }
 }
