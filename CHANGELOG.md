@@ -1,3 +1,13 @@
+## [1.3.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.2.0...v1.3.0) (2025-03-09)
+
+### Features
+
+* **storage:** modularizar contexto de armazenamento e melhorar gerenciamento de proxy ([fb01f1a](https://github.com/kleberoliveira/lazy-load-store/commit/fb01f1a6a487bf167770b4f09fa814f5fb815919))
+
+### Bug Fixes
+
+* **storage:** ajustar visibilidade de propriedade e atualizar teste de coleta de arquivos ([0f8d025](https://github.com/kleberoliveira/lazy-load-store/commit/0f8d0251002c814e11eae92fbdd3fc2dc1f1a3cf))
+
 ## [1.2.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.1.2...v1.2.0) (2025-03-07)
 
 ### Features
