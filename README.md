@@ -72,6 +72,36 @@ Caso não seja informado, o diretório padrão é o local de execução do proce
 
 ---
 
+### 🎯 **Utilizando Callbacks**
+
+Você pode passar uma função de callback que será chamada sempre que um valor for lido do storage:
+
+```ts
+import { Storage } from "lazy-load-store";
+
+const storage = new Storage(
+  "./storage-dir",
+  undefined,
+  (target, prop, value, receiver) => {
+    console.log(`Propriedade ${prop} foi acessada!`);
+    console.log(`Valor recuperado:`, value);
+  }
+);
+
+storage.someValue = "teste";
+console.log(storage.someValue); // Irá disparar o callback
+```
+
+O callback recebe quatro parâmetros:
+- `target`: A instância do Storage
+- `prop`: Nome da propriedade acessada
+- `value`: Valor recuperado
+- `receiver`: O objeto proxy
+
+Este recurso é útil para monitorar acessos aos dados, implementar logs ou realizar ações específicas quando determinadas propriedades são lidas.
+
+---
+
 ### 🧹 **Limpeza e destruição**
 
 ```ts
@@ -101,7 +131,7 @@ Instância singleton para manipulação de dados.
 - `storage[key]`: Recupera o valor, lendo o arquivo se necessário.
 - `storage.getFileName(property: string)`: Obtém o nome do arquivo salvo.
 - `storage.destroy()`: Remove arquivos criados e limpa o cache.
-- `new Storage(basePath?: string)`: Cria uma instância com um diretório de armazenamento customizado.
+- `new Storage(basePath?: string, data?: Record<string, unknown>, callback?: (target: Storage, prop: string, value: unknown, receiver: unknown) => void)`: Cria uma instância com configurações personalizadas.
 
 ---
 
