@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.3.0...v1.4.0) (2025-03-10)
+
+### Features
+
+* **storage:** adicionar suporte a callback de acesso a propriedades ([17560c8](https://github.com/kleberoliveira/lazy-load-store/commit/17560c89e73f5c3857b0d7c3ee28dff0ab1b1b7d))
+
 ## [1.3.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.2.0...v1.3.0) (2025-03-09)
 
 ### Features
