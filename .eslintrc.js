@@ -3,7 +3,7 @@ module.exports = {
   extends: ["plugin:@typescript-eslint/recommended", "prettier"],
   plugins: ["@typescript-eslint"],
   rules: {
-    "semi": ["error", "always"],
-    "quotes": ["error", "double"]
-  }
+    semi: ["error", "always"],
+    quotes: ["error", "double"],
+  },
 };

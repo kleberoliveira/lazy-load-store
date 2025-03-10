@@ -42,19 +42,20 @@ console.log(storage.getFileName("largeValue")); // "largeValue_<timestamp>.txt"
 const storage = new Storage();
 
 storage.nested = {
-  key1: "B".repeat(2000),  // Salvo em arquivo
-  key2: "small value",     // Armazenado diretamente
+  key1: "B".repeat(2000), // Salvo em arquivo
+  key2: "small value", // Armazenado diretamente
 };
 
 console.log(storage.nested.key1); // Conteúdo do arquivo
 console.log(storage.nested.key2); // "small value"
-console.log(storage.getFileName("nested")); 
+console.log(storage.getFileName("nested"));
 // { key1: "nested_key1_<timestamp>.txt" }
 ```
 
 ---
 
 ### 📂 **Definindo o local de armazenamento**
+
 Agora é possível informar o diretório onde os arquivos serão salvos ao instanciar o `Storage`:
 
 ```ts
@@ -91,6 +92,7 @@ npm test
 ## 🛡️ API
 
 ### `storage: Storage`
+
 Instância singleton para manipulação de dados.
 
 #### 📥 **Métodos:**

@@ -53,7 +53,9 @@ describe("Storage", () => {
       key2: "small value",
     };
 
-    const getFileName = storage.getFileName as (property: string) => Record<string, string> | undefined;
+    const getFileName = storage.getFileName as (
+      property: string
+    ) => Record<string, string> | undefined;
     const fileName = getFileName?.("nested")?.key1;
     const filePath = fileName ? join(storageDir, fileName) : "";
 
@@ -85,7 +87,9 @@ describe("Storage", () => {
   it("should delete all files when destroy is called", () => {
     storage.toDelete = largeString;
 
-    const getFileName = storage.getFileName as (property: string) => string | undefined;
+    const getFileName = storage.getFileName as (
+      property: string
+    ) => string | undefined;
     const fileName = getFileName?.("toDelete");
     const filePath = fileName ? join(storageDir, fileName) : "";
 

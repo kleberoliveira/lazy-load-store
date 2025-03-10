@@ -47,12 +47,17 @@ export class PropertyHandler {
     }
 
     if (Array.isArray(value)) {
-      return value.map((item, index) => this.processValueForSet(`${prop}_${index}`, item));
+      return value.map((item, index) =>
+        this.processValueForSet(`${prop}_${index}`, item)
+      );
     }
 
     if (isObject(value)) {
       return Object.fromEntries(
-        Object.entries(value).map(([key, val]) => [key, this.processValueForSet(`${prop}_${key}`, val)])
+        Object.entries(value).map(([key, val]) => [
+          key,
+          this.processValueForSet(`${prop}_${key}`, val),
+        ])
       );
     }
 
@@ -76,7 +81,10 @@ export class PropertyHandler {
 
     if (isObject(value)) {
       return Object.fromEntries(
-        Object.entries(value).map(([key, val]) => [key, this.processValueForGet(val)])
+        Object.entries(value).map(([key, val]) => [
+          key,
+          this.processValueForGet(val),
+        ])
       );
     }
 
