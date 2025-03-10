@@ -108,7 +108,7 @@ class StorageContext {
 
     const value = this.getProcessedValue(prop);
     if (this.callback) {
-      this.callback(target, prop, value, receiver);
+      return this.callback(target, prop, value, receiver);
     }
     return value;
   }
