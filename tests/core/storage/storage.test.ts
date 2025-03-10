@@ -35,7 +35,9 @@ describe("Storage", () => {
   it("should save a large string to a file and retrieve it", () => {
     storage.largeValue = largeString;
 
-    const getFileName = storage.getFileName as (property: string) => string | undefined;
+    const getFileName = storage.getFileName as (
+      property: string
+    ) => string | undefined;
     const fileName = getFileName?.("largeValue");
     const filePath = fileName ? join(storageDir, fileName) : "";
 
@@ -93,5 +95,25 @@ describe("Storage", () => {
     storage.destroy();
 
     expect(existsSync(filePath)).toBe(false);
+  });
+
+  it("should call the callback when a property is accessed", () => {
+    const callback = jest.fn();
+    storage = new Storage(
+      process.cwd(),
+      {},
+      callback
+    ) as StorageWithDynamicProps;
+
+    storage.largeValue = largeString;
+
+    storage.largeValue;
+
+    expect(callback).toHaveBeenCalledWith(
+      storage,
+      "largeValue",
+      largeString,
+      storage
+    );
   });
 });

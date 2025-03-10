@@ -6,10 +6,19 @@ import { isObject } from "../../utils/type-guards";
 const contextMap = new WeakMap<object, StorageContext>();
 
 export class Storage {
-  constructor(basePath: string = process.cwd(), data: Record<string, unknown> = {}) {
+  constructor(
+    basePath: string = process.cwd(),
+    data?: Record<string, unknown>,
+    callback?: (
+      target: Storage,
+      prop: string,
+      value: unknown,
+      receiver: unknown
+    ) => void
+  ) {
     const instance = Object.create(Storage.prototype);
-    const context = new StorageContext(basePath, data);
-    
+    const context = new StorageContext(basePath, data, callback);
+
     const proxy = new Proxy(instance, context.createProxyHandler());
     contextMap.set(proxy, context);
 
@@ -32,37 +41,61 @@ export class Storage {
     const context = contextMap.get(this);
     if (!context) throw new Error("Context not found.");
     return context.getAllData();
-  }  
+  }
 }
 
 class StorageContext {
   private fileManager: FileManager;
   private propertyHandler: PropertyHandler;
   private __data__: Record<string, unknown>;
+  private callback?: (
+    target: Storage,
+    prop: string,
+    value: unknown,
+    receiver: unknown
+  ) => void;
 
   private objectCache = new WeakMap<object, Storage>();
 
-  constructor(basePath: string, data: Record<string, unknown>) {
+  constructor(
+    basePath: string,
+    data?: Record<string, unknown>,
+    callback?: (
+      target: Storage,
+      prop: string,
+      value: unknown,
+      receiver: unknown
+    ) => void
+  ) {
     const storagePath = resolve(basePath, "storage");
-    this.__data__ = data;
+    this.__data__ = data ?? {};
     this.fileManager = new FileManager(storagePath);
     this.propertyHandler = new PropertyHandler(this.fileManager);
+    this.callback = callback;
   }
 
   public createProxyHandler(): ProxyHandler<Storage> {
     return {
       set: (target, prop, value) => this.setHandler(target, prop, value),
-      get: (target, prop) => this.getHandler(target, prop),
+      get: (target, prop, receiver) => this.getHandler(target, prop, receiver),
     };
   }
 
-  private setHandler(target: Storage, prop: string | symbol, value: unknown): boolean {
+  private setHandler(
+    target: Storage,
+    prop: string | symbol,
+    value: unknown
+  ): boolean {
     if (typeof prop !== "string") return false;
     this.__data__[prop] = this.propertyHandler.handleSet(prop, value);
     return true;
   }
 
-  private getHandler(target: Storage, prop: string | symbol): unknown {
+  private getHandler(
+    target: Storage,
+    prop: string | symbol,
+    receiver: unknown
+  ): unknown {
     if (typeof prop !== "string") return undefined;
 
     if (this.isPropertyOfTarget(target, prop)) {
@@ -73,7 +106,11 @@ class StorageContext {
       return this.createGetFileNameMethod();
     }
 
-    return this.getProcessedValue(prop);
+    const value = this.getProcessedValue(prop);
+    if (this.callback) {
+      this.callback(target, prop, value, receiver);
+    }
+    return value;
   }
 
   private isPropertyOfTarget(target: Storage, prop: string): boolean {
@@ -97,13 +134,13 @@ class StorageContext {
         return this.objectCache.get(value);
       }
 
-      const storageInstance = new Storage(process.cwd(), value);
+      const storageInstance = new Storage(process.cwd(), value, this.callback);
       this.objectCache.set(value, storageInstance);
       return storageInstance;
     }
 
     return value;
-  }  
+  }
 
   public collectFiles(data: unknown): string[] {
     if (!data || typeof data !== "object") return [];
@@ -124,7 +161,9 @@ class StorageContext {
 
   public async destroy(): Promise<void> {
     const filesToDelete = this.collectFiles(this.__data__);
-    const promisesToDelete = filesToDelete.map((file) => this.fileManager.deleteFile(file));
+    const promisesToDelete = filesToDelete.map((file) =>
+      this.fileManager.deleteFile(file)
+    );
     await Promise.all(promisesToDelete);
   }
 }
