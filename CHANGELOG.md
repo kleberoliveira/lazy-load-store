@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/kleberoliveira/lazy-load-store/compare/v1.4.0...v1.4.1) (2025-03-13)
+
+### Bug Fixes
+
+* **storage:** garantir retorno do callback no acesso a propriedades ([dedf430](https://github.com/kleberoliveira/lazy-load-store/commit/dedf430989d733ea1c9cdb821d5d8eaff6baca52))
+* **utils:** atualizar type-guard para excluir Date e RegExp ([00298b6](https://github.com/kleberoliveira/lazy-load-store/commit/00298b68cfcd7ab08f304405f747cb516b319496))
+
 ## [1.4.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.3.0...v1.4.0) (2025-03-10)
 
 ### Features
