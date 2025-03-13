@@ -120,4 +120,15 @@ describe("Storage", () => {
       storage
     );
   });
+
+  it("should handle new Date formats correctly", () => {
+    const date = new Date("2022-01-01T00:00:00Z");
+    storage.createdAt = date;
+
+    expect(storage.createdAt as Date).toEqual(date);
+    expect(storage.createdAt as Date).toBeInstanceOf(Date);
+    expect((storage.createdAt as Date).toISOString()).toBe(
+      "2022-01-01T00:00:00.000Z"
+    );
+  });
 });
