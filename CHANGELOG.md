@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.4.1...v1.5.0) (2025-03-18)
+
+### Features
+
+* **storage:** refatorar método getAllData para processar adequadamente todos os tipos de dados retornados. Adicionar lógica para preservar estrutura de array e manipular objetos aninhados com grandes strings. Ajustar testes para validar comportamento esperado das modificações. ([645fb72](https://github.com/kleberoliveira/lazy-load-store/commit/645fb72ddee8aab8f0204425fe175ffe7a686bd0))
+
 ## [1.4.1](https://github.com/kleberoliveira/lazy-load-store/compare/v1.4.0...v1.4.1) (2025-03-13)
 
 ### Bug Fixes
