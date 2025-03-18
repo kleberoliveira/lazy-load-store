@@ -47,6 +47,22 @@ describe("Storage", () => {
     expect(storage.largeValue).toBe(largeString);
   });
 
+  it("should ensure array structure is maintained", () => {
+    const arrayData = ["value1", largeString, "value3"];
+    storage.arrayProp = arrayData;
+
+    const getFileName = storage.getFileName as (
+      property: string
+    ) => string | Array<string>;
+    const fileName = getFileName?.("arrayProp")[1];
+    const filePath = fileName ? join(storageDir, fileName) : "";
+
+    expect(fileName).toBe("arrayProp_1_mocked.txt");
+    expect(existsSync(filePath)).toBe(true);
+    expect(readFileSync(filePath, "utf-8")).toBe(largeString);
+    expect(storage.arrayProp).toEqual(arrayData);
+  });
+
   it("should handle nested objects with large strings", () => {
     storage.nested = {
       key1: largeString,

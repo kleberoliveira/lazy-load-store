@@ -156,8 +156,26 @@ class StorageContext {
   }
 
   public getAllData(): Record<string, unknown> {
-    return JSON.parse(JSON.stringify(this.__data__));
-  }
+    const processData = (data: unknown): unknown => {
+      if (typeof data !== "object" || data === null) {
+        return data;
+      }
+
+      if (Array.isArray(data)) {
+        return data.map(item => processData(item));
+      }
+
+      const result: Record<string, unknown> = {};
+      for (const key in data as Record<string, unknown>) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          result[key] = this.propertyHandler.handleGet(key, processData((data as Record<string, unknown>)[key]));
+        }
+      }
+      return result;
+      };
+
+      return processData(this.__data__) as Record<string, unknown>;
+    }
 
   public async destroy(): Promise<void> {
     const filesToDelete = this.collectFiles(this.__data__);
