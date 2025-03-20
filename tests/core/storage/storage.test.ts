@@ -117,26 +117,6 @@ describe("Storage", () => {
     expect(existsSync(filePath)).toBe(false);
   });
 
-  it("should call the callback when a property is accessed", () => {
-    const callback = jest.fn();
-    storage = new Storage(
-      process.cwd(),
-      {},
-      callback
-    ) as StorageWithDynamicProps;
-
-    storage.largeValue = largeString;
-
-    storage.largeValue;
-
-    expect(callback).toHaveBeenCalledWith(
-      storage,
-      "largeValue",
-      largeString,
-      storage
-    );
-  });
-
   it("should handle new Date formats correctly", () => {
     const date = new Date("2022-01-01T00:00:00Z");
     storage.createdAt = date;

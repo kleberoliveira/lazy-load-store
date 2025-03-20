@@ -78,7 +78,28 @@ class StorageContext {
   public createProxyHandler(): ProxyHandler<Storage> {
     return {
       set: (target, prop, value) => this.setHandler(target, prop, value),
-      get: (target, prop: string | symbol, receiver) => this.getHandler(target, prop, receiver),
+      get: (target, prop: string | symbol, receiver) => {
+        if (prop === "valueOf") {
+          return () => this.getAllData();
+        }
+        if (prop === "toString") {
+          return () => `[Storage ${JSON.stringify(this.getAllData())}]`;
+        }
+        if (prop === Symbol.toPrimitive) {
+          return (hint: string) => {
+            if (hint === "string") return JSON.stringify(this.getAllData());
+            if (hint === "number") return Object.keys(this.getAllData()).length;
+            return this.getAllData();
+          };
+        }
+        if (prop === Symbol.toStringTag) {
+          return "Storage";
+        }
+        if (prop === Symbol.iterator) {
+          return this.getIterator();
+        }
+        return this.getHandler(target, prop, receiver);
+      },
       ownKeys: () => this.ownKeysHandler(),
       getOwnPropertyDescriptor: (target, prop: string) => this.getOwnPropertyDescriptorHandler(prop),
       has: (_target, prop: string) => prop in this.getAllData(),
@@ -88,7 +109,7 @@ class StorageContext {
       preventExtensions: (_target) => {
         Object.preventExtensions(this.__data__);
         return true;
-      }      
+      },     
     };
   }
 
@@ -127,6 +148,10 @@ class StorageContext {
   private ownKeysHandler(): string[] {
     return Object.keys(this.getAllData());
   }  
+
+  private getIterator(): IterableIterator<[string, unknown]> {
+    return Object.entries(this.getAllData()).values();
+  }
 
   private getOwnPropertyDescriptorHandler(prop: string): PropertyDescriptor | undefined {
     return Object.getOwnPropertyDescriptor(this.__data__, prop);
