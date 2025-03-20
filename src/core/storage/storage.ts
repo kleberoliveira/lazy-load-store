@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { resolve } from "path";
 import { FileManager } from "../file/";
 import { PropertyHandler } from "../handlers";
@@ -77,7 +78,17 @@ class StorageContext {
   public createProxyHandler(): ProxyHandler<Storage> {
     return {
       set: (target, prop, value) => this.setHandler(target, prop, value),
-      get: (target, prop, receiver) => this.getHandler(target, prop, receiver),
+      get: (target, prop: string | symbol, receiver) => this.getHandler(target, prop, receiver),
+      ownKeys: () => this.ownKeysHandler(),
+      getOwnPropertyDescriptor: (target, prop: string) => this.getOwnPropertyDescriptorHandler(prop),
+      has: (_target, prop: string) => prop in this.getAllData(),
+      deleteProperty: (_target, prop: string) => this.deletePropertyHandler(prop),
+      getPrototypeOf: (_target) => Object.getPrototypeOf(this.__data__),
+      setPrototypeOf: (_target, proto) => Object.setPrototypeOf(this.__data__, proto),
+      preventExtensions: (_target) => {
+        Object.preventExtensions(this.__data__);
+        return true;
+      }      
     };
   }
 
@@ -111,6 +122,18 @@ class StorageContext {
       return this.callback(target, prop, value, receiver);
     }
     return value;
+  }
+
+  private ownKeysHandler(): string[] {
+    return Object.keys(this.getAllData());
+  }  
+
+  private getOwnPropertyDescriptorHandler(prop: string): PropertyDescriptor | undefined {
+    return Object.getOwnPropertyDescriptor(this.__data__, prop);
+  }
+
+  private deletePropertyHandler(prop: string): boolean {
+    return delete this.__data__[prop];
   }
 
   private isPropertyOfTarget(target: Storage, prop: string): boolean {
