@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.5.0...v1.6.0) (2025-03-20)
+
+### Features
+
+* **storage:** adicionar novos manipuladores ao proxy para melhorar a gestão de propriedades ([a1b7caa](https://github.com/kleberoliveira/lazy-load-store/commit/a1b7caa81447efef086bccfa078fab52b73988f0))
+
 ## [1.5.0](https://github.com/kleberoliveira/lazy-load-store/compare/v1.4.1...v1.5.0) (2025-03-18)
 
 ### Features
