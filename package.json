@@ -1,6 +1,6 @@
 {
   "name": "lazy-load-store",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Effortlessly store large nested object values in files with automatic retrieval and reference handling.",
   "files": [
     "dist"
