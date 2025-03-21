@@ -213,6 +213,10 @@ class StorageContext {
         return data;
       }
 
+      if (data instanceof Date) {
+        return data;
+      }
+
       if (Array.isArray(data)) {
         return data.map(item => processData(item));
       }
