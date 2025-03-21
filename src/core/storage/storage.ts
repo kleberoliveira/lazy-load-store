@@ -177,6 +177,10 @@ class StorageContext {
   private getProcessedValue(prop: string): unknown {
     const value = this.propertyHandler.handleGet(prop, this.__data__[prop]);
 
+    if (value instanceof Date) {
+      return value;
+    }
+    
     if (isObject(value)) {
       if (this.objectCache.has(value)) {
         return this.objectCache.get(value);
