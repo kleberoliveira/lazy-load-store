@@ -1,3 +1,9 @@
+## [1.7.2](https://github.com/kleberoliveira/lazy-load-store/compare/v1.7.1...v1.7.2) (2025-03-21)
+
+### Bug Fixes
+
+* **storage:** garantir retorno correto de objetos Date no método getProcessedValue ([ca3e8f2](https://github.com/kleberoliveira/lazy-load-store/commit/ca3e8f2cd7183d8d3babb2ac50ee016bf46c71ad))
+
 ## [1.7.1](https://github.com/kleberoliveira/lazy-load-store/compare/v1.7.0...v1.7.1) (2025-03-21)
 
 ### Bug Fixes
